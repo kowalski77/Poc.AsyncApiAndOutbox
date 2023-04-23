@@ -23,7 +23,7 @@ builder.Services.AddScoped<ServiceTwo>();
 
 builder.Services.AddScoped<OperationService>();
 builder.Services.AddScoped<OutboxService>();
-builder.Services.AddHostedService<OutboxHostedService>();
+builder.Services.AddHostedService<ServiceTwoHostedService>();
 
 WebApplication app = builder.Build();
 
