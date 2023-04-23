@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using Poc.AsyncApiAndOutbox;
 using Poc.AsyncApiAndOutbox.Features;
 using Poc.AsyncApiAndOutbox.Outbox;
 using Poc.AsyncApiAndOutbox.Services;
@@ -22,7 +23,7 @@ builder.Services.AddScoped<ServiceTwo>();
 
 builder.Services.AddScoped<OperationService>();
 builder.Services.AddScoped<OutboxService>();
-//builder.Services.AddHostedService<OutboxHostedService>();
+builder.Services.AddHostedService<OutboxHostedService>();
 
 WebApplication app = builder.Build();
 
