@@ -14,11 +14,12 @@ public sealed class OutboxMessage
 
     public OutboxMessage(
         Guid transactionId,
+        DateTime occurredOn,
         string data)
     {
         this.Id = Guid.NewGuid();
         this.TransactionId = transactionId;
-        this.OccurredOn = DateTime.UtcNow;
+        this.OccurredOn = occurredOn;
         this.Data = data;
         this.State = EventState.Pending;
     }

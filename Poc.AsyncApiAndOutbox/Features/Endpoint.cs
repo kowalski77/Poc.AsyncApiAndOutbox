@@ -8,9 +8,9 @@ namespace Poc.AsyncApiAndOutbox.Features;
 public class Endpoint : ControllerBase
 {
     private readonly ServiceOne serviceOne;
-    private readonly OperationService operationService;
+    private readonly OperationRequestService operationService;
 
-    public Endpoint(ServiceOne serviceOne, OperationService operationService)
+    public Endpoint(ServiceOne serviceOne, OperationRequestService operationService)
     {
         this.serviceOne = serviceOne;
         this.operationService = operationService;

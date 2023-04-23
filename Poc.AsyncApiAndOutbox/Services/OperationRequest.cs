@@ -6,7 +6,7 @@ public sealed class OperationRequest<T> where T : notnull
 
     public T ClientRequest { get; set; } = default!;
 
-    public DateTimeOffset EstimatedCompletionTime { get; set; } = DateTime.UtcNow.AddMinutes(20);
+    public DateTimeOffset EstimatedCompletionTime { get; set; } 
 
     public OperationRequestStatus RequestStatus { get; set; }
 }

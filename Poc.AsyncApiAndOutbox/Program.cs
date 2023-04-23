@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Poc.AsyncApiAndOutbox;
 using Poc.AsyncApiAndOutbox.Features;
 using Poc.AsyncApiAndOutbox.Outbox;
 using Poc.AsyncApiAndOutbox.Services;
@@ -18,10 +17,17 @@ builder.Services.AddDbContext<OutboxContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
+
+builder.Services.AddSingleton<ITimeProvider, TimeProvider>();
 builder.Services.AddScoped<ServiceOne>();
 builder.Services.AddScoped<ServiceTwo>();
 
-builder.Services.AddScoped<OperationService>();
+builder.Services.AddOptions<OperationRequestOptions>()
+    .Bind(builder.Configuration.GetSection(nameof(OperationRequestOptions)))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+builder.Services.AddScoped<OperationRequestService>();
 builder.Services.AddScoped<OutboxService>();
 builder.Services.AddHostedService<ServiceTwoHostedService>();
 

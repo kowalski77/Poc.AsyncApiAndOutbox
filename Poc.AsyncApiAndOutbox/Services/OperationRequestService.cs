@@ -1,13 +1,21 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Poc.AsyncApiAndOutbox.Outbox;
 
 namespace Poc.AsyncApiAndOutbox.Services;
 
-public sealed class OperationService
+public sealed class OperationRequestService
 {
     private readonly OutboxService outboxService;
+    private readonly IOptionsMonitor<OperationRequestOptions> options;
+    private readonly ITimeProvider timeProvider;
 
-    public OperationService(OutboxService outboxService) => this.outboxService = outboxService;
+    public OperationRequestService(OutboxService outboxService, IOptionsMonitor<OperationRequestOptions> options, ITimeProvider timeProvider)
+    {
+        this.outboxService = outboxService;
+        this.options = options;
+        this.timeProvider = timeProvider;
+    }
 
     public async Task<OperationRequest<T>> SaveOperationAsync<T>(T request) where T : notnull
     {
@@ -15,10 +23,15 @@ public sealed class OperationService
 
         OperationRequest<T> operationRequest = new()
         {
-            ClientRequest = request
+            ClientRequest = request,
+            EstimatedCompletionTime = this.timeProvider.GetUtcNowOffset().AddMinutes(this.options.CurrentValue.CompletionTimeInMinutes),
         };
 
-        OutboxMessage outboxMessage = new(operationRequest.RequestId, JsonSerializer.Serialize(operationRequest));
+        OutboxMessage outboxMessage = new(
+            operationRequest.RequestId, 
+            this.timeProvider.GetUtcNow(),
+            JsonSerializer.Serialize(operationRequest));
+
         await this.outboxService.SaveAsync(outboxMessage).ConfigureAwait(false);
 
         return operationRequest;
