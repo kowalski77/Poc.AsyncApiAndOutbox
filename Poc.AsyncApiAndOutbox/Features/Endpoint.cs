@@ -1,6 +1,5 @@
-﻿using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using Poc.AsyncApiAndOutbox.Outbox;
+﻿using Microsoft.AspNetCore.Mvc;
+using Poc.AsyncApiAndOutbox.Services;
 
 namespace Poc.AsyncApiAndOutbox.Features;
 
@@ -9,12 +8,12 @@ namespace Poc.AsyncApiAndOutbox.Features;
 public class Endpoint : ControllerBase
 {
     private readonly ServiceOne serviceOne;
-    private readonly OutboxContext outboxContext;
+    private readonly OperationService operationService;
 
-    public Endpoint(ServiceOne serviceOne, OutboxContext outboxContext)
+    public Endpoint(ServiceOne serviceOne, OperationService operationService)
     {
         this.serviceOne = serviceOne;
-        this.outboxContext = outboxContext;
+        this.operationService = operationService;
     }
 
     [HttpPost]
@@ -22,37 +21,22 @@ public class Endpoint : ControllerBase
     {
         serviceOne.DoSomething(request);
 
-        OperationRequest operationRequest = new()
-        {
-            ClientRequest = request,
-        };
-
-        OutboxMessage outboxMessage = new(operationRequest.RequestId, JsonSerializer.Serialize(operationRequest));
-        outboxContext.OutboxMessages.Add(outboxMessage);
-        await outboxContext.SaveChangesAsync().ConfigureAwait(false);
+        OperationRequest<ClientRequest> operationRequest = await this.operationService.SaveOperationAsync(request).ConfigureAwait(false);
 
         return this.AcceptedAtRoute(nameof(Status), new { requestId = operationRequest.RequestId }, operationRequest);
     }
 
     [HttpGet("{requestId:guid}", Name = nameof(Status))]
-    public IActionResult Status(Guid requestId)
+    public async Task<IActionResult> Status(Guid requestId)
     {
-        OutboxMessage? outboxMessage = outboxContext.OutboxMessages.SingleOrDefault(x => x.TransactionId == requestId);
+        OperationRequest<ClientRequest>? operationRequest = await this.operationService.GetOperationAsync<ClientRequest>(requestId).ConfigureAwait(false);
 
-        return outboxMessage switch
+        return operationRequest switch
         {
             null => this.NotFound(),
-            { State: EventState.Finalized } => this.Ok(),
-            { State: EventState.Failed } => this.BadRequest(),
-            _ => NotFinalizedOperation(outboxMessage),
+            { RequestStatus: OperationRequestStatus.Completed } => this.Ok(),
+            { RequestStatus: OperationRequestStatus.Failed } => this.BadRequest(),
+            _ => this.NotFound(operationRequest),
         };
-    }
-
-    private NotFoundObjectResult NotFinalizedOperation(OutboxMessage outboxMessage)
-    {
-        // TODO: update estimated completion time
-        OperationRequest operationRequest = JsonSerializer.Deserialize<OperationRequest>(outboxMessage.Data)!;
-
-        return this.NotFound(operationRequest);
     }
 }

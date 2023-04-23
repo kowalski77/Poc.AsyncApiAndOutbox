@@ -44,8 +44,8 @@ public class OutboxHostedService : BackgroundService
             {
                 try
                 {
-                    OperationRequest operationRequest = JsonSerializer.Deserialize<OperationRequest>(outboxMessage.Data)!;
-                    serviceTwo.DoSomething(operationRequest.ClientRequest);
+                    //OperationRequest operationRequest = JsonSerializer.Deserialize<OperationRequest>(outboxMessage.Data)!;
+                    //serviceTwo.DoSomething(operationRequest.ClientRequest);
 
                     outboxMessage.State = EventState.Finalized;
                 }
