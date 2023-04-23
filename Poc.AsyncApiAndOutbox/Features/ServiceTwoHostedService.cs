@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Microsoft.Extensions.Options;
 using Poc.AsyncApiAndOutbox.Outbox;
 using Poc.AsyncApiAndOutbox.Services;
 
@@ -29,6 +30,7 @@ public class ServiceTwoHostedService : BackgroundService
 
         OutboxService outboxService = scope.ServiceProvider.GetRequiredService<OutboxService>();
         ServiceTwo serviceTwo = scope.ServiceProvider.GetRequiredService<ServiceTwo>();
+        IOptionsMonitor<OperationRequestOptions> options = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<OperationRequestOptions>>();
 
         IReadOnlyList<OutboxMessage> outboxMessages = await outboxService.GetPendingOutboxMessagesAsync(stoppingToken).ConfigureAwait(false);
 
@@ -39,7 +41,7 @@ public class ServiceTwoHostedService : BackgroundService
             await outboxService.UpdateAsync(outboxMessage).ConfigureAwait(false);
         }
 
-        await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromMinutes(options.CurrentValue.RetryIntervalInMinutes), stoppingToken).ConfigureAwait(false);
     }
 
     private void TryExecuteServiceTwo(ServiceTwo serviceTwo, OutboxMessage outboxMessage)
