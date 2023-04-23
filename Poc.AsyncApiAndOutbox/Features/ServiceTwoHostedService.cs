@@ -19,37 +19,45 @@ public class ServiceTwoHostedService : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            await DoWorkAsync(stoppingToken).ConfigureAwait(false);
+            await this.DoWorkAsync(stoppingToken).ConfigureAwait(false);
         }
     }
 
     private async Task DoWorkAsync(CancellationToken stoppingToken)
     {
-        using IServiceScope scope = serviceProvider.CreateScope();
+        using IServiceScope scope = this.serviceProvider.CreateScope();
 
         OutboxService outboxService = scope.ServiceProvider.GetRequiredService<OutboxService>();
-        IReadOnlyList<OutboxMessage> outboxMessages = await outboxService.GetPendingOutboxMessagesAsync(stoppingToken).ConfigureAwait(false);
-
         ServiceTwo serviceTwo = scope.ServiceProvider.GetRequiredService<ServiceTwo>();
+
+        IReadOnlyList<OutboxMessage> outboxMessages = await outboxService.GetPendingOutboxMessagesAsync(stoppingToken).ConfigureAwait(false);
 
         foreach (OutboxMessage outboxMessage in outboxMessages)
         {
-            try
-            {
-                OperationRequest<ClientRequest> operationRequest = JsonSerializer.Deserialize<OperationRequest<ClientRequest>>(outboxMessage.Data)!;
-                serviceTwo.DoSomething(operationRequest.ClientRequest);
-
-                outboxMessage.MarkAsFinalized();
-            }
-            catch (InvalidOperationException e)
-            {
-                this.logger.LogError(e, "Error while processing outbox message");
-                outboxMessage.MarkAsFailed();
-            }
+            this.TryExecuteServiceTwo(serviceTwo, outboxMessage);
 
             await outboxService.UpdateAsync(outboxMessage).ConfigureAwait(false);
         }
 
         await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken).ConfigureAwait(false);
+    }
+
+    private void TryExecuteServiceTwo(ServiceTwo serviceTwo, OutboxMessage outboxMessage)
+    {
+        try
+        {
+            OperationRequest<ClientRequest> operationRequest = JsonSerializer.Deserialize<OperationRequest<ClientRequest>>(outboxMessage.Data)!;
+            var succeed = serviceTwo.DoSomething(operationRequest.ClientRequest);
+            if (succeed)
+            {
+                outboxMessage.MarkAsFinalized();
+            }
+        }
+        catch (Exception e)
+        {
+            this.logger.LogError(e, "Error while processing outbox message");
+            outboxMessage.MarkAsFailed();
+            throw;
+        }
     }
 }

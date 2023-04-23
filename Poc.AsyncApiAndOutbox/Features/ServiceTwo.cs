@@ -6,8 +6,10 @@ public class ServiceTwo
 
     public ServiceTwo(ILogger<ServiceTwo> logger) => this.logger = logger;
 
-    public void DoSomething(ClientRequest request)
+    public bool DoSomething(ClientRequest request)
     {
         logger.LogInformation("Service two does something with {request} ...", request);
+
+        return true;
     }
 }
