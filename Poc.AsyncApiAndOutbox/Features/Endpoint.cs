@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using Poc.FirmwareUploadOutbox.Outbox;
+using Poc.AsyncApiAndOutbox.Outbox;
 
-namespace Poc.FirmwareUploadOutbox.Features;
+namespace Poc.AsyncApiAndOutbox.Features;
 
 [ApiController]
 [Route("api/[controller]")]

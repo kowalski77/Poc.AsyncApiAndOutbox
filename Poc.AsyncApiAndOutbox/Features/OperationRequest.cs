@@ -1,4 +1,4 @@
-﻿namespace Poc.FirmwareUploadOutbox.Features;
+﻿namespace Poc.AsyncApiAndOutbox.Features;
 
 public sealed class OperationRequest
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Poc.FirmwareUploadOutbox.Outbox;
+namespace Poc.AsyncApiAndOutbox.Outbox;
 
 public class OutboxContext : DbContext
 {

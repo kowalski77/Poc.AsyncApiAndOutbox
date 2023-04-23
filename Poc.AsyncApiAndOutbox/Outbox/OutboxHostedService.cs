@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Poc.FirmwareUploadOutbox.Features;
+using Poc.AsyncApiAndOutbox.Features;
 
-namespace Poc.FirmwareUploadOutbox.Outbox;
+namespace Poc.AsyncApiAndOutbox.Outbox;
 
 public class OutboxHostedService : BackgroundService
 {

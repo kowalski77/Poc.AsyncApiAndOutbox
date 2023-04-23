@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poc.FirmwareUploadOutbox", "Poc.FirmwareUploadOutbox\Poc.FirmwareUploadOutbox.csproj", "{64ABA49E-5EA7-4414-929B-AF6339F85FFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poc.AsyncApiAndOutbox", "Poc.AsyncApiAndOutbox\Poc.AsyncApiAndOutbox.csproj", "{64ABA49E-5EA7-4414-929B-AF6339F85FFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

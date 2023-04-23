@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Poc.FirmwareUploadOutbox.Outbox;
+namespace Poc.AsyncApiAndOutbox.Outbox;
 
 public class OutboxMessageEntityTypeConfiguration : IEntityTypeConfiguration<OutboxMessage>
 {

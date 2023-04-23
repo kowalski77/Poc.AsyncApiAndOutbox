@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using Poc.FirmwareUploadOutbox.Features;
-using Poc.FirmwareUploadOutbox.Outbox;
+using Poc.AsyncApiAndOutbox.Features;
+using Poc.AsyncApiAndOutbox.Outbox;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddJsonOptions(options =>

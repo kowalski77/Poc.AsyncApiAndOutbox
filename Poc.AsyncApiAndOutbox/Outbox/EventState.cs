@@ -1,4 +1,4 @@
-﻿namespace Poc.FirmwareUploadOutbox.Outbox;
+﻿namespace Poc.AsyncApiAndOutbox.Outbox;
 
 public enum EventState
 {
